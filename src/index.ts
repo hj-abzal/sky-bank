@@ -1,51 +1,36 @@
-import express from "express";
-import http from "http";
-import socketIo from "socket.io";
-import mongoose from "mongoose";
-import {MongoDBUris, PORT} from "./cnb-1-main/config";
-import {appUse} from "./cnb-1-main/app";
-import {routes} from "./cnb-1-main/routes";
-import {onConnect} from "./cnb-2-features/f-3-social/s-1-controllers/c1-socket";
-import {sendMail} from "./cnb-2-features/f-1-auth/a-3-helpers/h-3-gmail/gmail";
-// yarn upgrade
+import express from 'express';
+import http from 'http';
+import {Server, Socket} from 'socket.io';
+import mongoose from 'mongoose';
+import {MongoDBUris, PORT} from './lb-1-main/config';
+import {appUse} from './lb-1-main/app';
+import {routes} from './lb-1-main/routes';
+
 
 const app = express();
 
-appUse(app);
-routes(app);
+appUse(app)
+routes(app)
 
 const server = http.createServer(app);
-const socketServer = socketIo(server);
+const socketServer = new Server(server);
 
-socketServer.on('connection', onConnect(socketServer));
+socketServer.on('connection', (socket: Socket) => {
+    //onConnect(socketServer) // (socketServer: Server) => (socket: Socket) =>
+});
 
-/////////////////////////////////////////////////////////////////
-
-mongoose.connect(MongoDBUris, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-})
+mongoose.connect(MongoDBUris)
     .then(() => {
-        console.log("Nya-MongoDB connected successfully");
+        console.log('MongoDB is connected successfully!');
 
         const port = process.env.PORT || PORT;
 
-        server.listen(port, async() => {
-            console.log("Cards-Nya-back 2.0 listening on port: " + port);
-
-
-            // try {
-            //     const x = await sendMail('neko.cafe@outlook.com', 'ai73a@yandex.com', 'aaa', '<div style="background-color: lime">zzz</div>')
-            //     console.log(x)
-            // } catch (e) {
-            //     console.log(e, {...e})
-            // }
+        server.listen(port, async () => {
+            console.log('Server listening on port: ' + port);
         });
     })
-    .catch(e => console.log("Nya-MongoDB connection error: ", {...e}));
+    .catch(e => console.log('Connection error: ' + {...e}));
 
-process.on("unhandledRejection", (reason, p) => {
-    console.log("Nya-unhandledRejection: ", reason, p);
+process.on('unhandledRejection', (reason, promise) => {
+    console.log('UnhandledRejection: ', reason, promise);
 });
