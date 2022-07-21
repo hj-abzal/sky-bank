@@ -1,32 +1,29 @@
-import {Express, NextFunction, Request, Response} from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-
-export const appUse = (app: Express) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.appUse = void 0;
+const body_parser_1 = __importDefault(require("body-parser"));
+const cors_1 = __importDefault(require("cors"));
+const appUse = (app) => {
     const corsOptions = {
         credentials: true,
-        origin: (
-            origin: string | undefined,
-            callback: (err: Error | null, allow?: boolean) => void
-        ) => {
+        origin: (origin, callback) => {
             // if (whitelist.includes(origin || '')) {
             //     return callback(null, true);
             // }
             // callback(new Error('Not allowed by CORS'));
-
             console.log('origin: ', origin);
             callback(null, true); //everyone is allowed
         }
     };
-
-    app.use(cors(corsOptions));
+    app.use((0, cors_1.default)(corsOptions));
     // parse application/json
-    app.use(bodyParser.json({limit: '7mb'}));
-
+    app.use(body_parser_1.default.json({ limit: '7mb' }));
     // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({limit: '7mb', extended: true}))
-
-    app.use((req: Request, res: Response, next: NextFunction) => {
+    app.use(body_parser_1.default.urlencoded({ limit: '7mb', extended: true }));
+    app.use((req, res, next) => {
         console.log('Time: ', new Date().toString());
         console.log('---', req.method, req.url, 'params:', req.params);
         console.log('query:', req.query);
@@ -37,3 +34,5 @@ export const appUse = (app: Express) => {
         next();
     });
 };
+exports.appUse = appUse;
+//# sourceMappingURL=app.js.map
